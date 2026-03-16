@@ -232,6 +232,16 @@ export default function Home() {
 
   const [pillState, setPillState] = useState<'image' | 'video' | 'stretch'>('image');
 
+  const closeAllDirectorPopovers = () => {
+    setFovOpen(false);
+    setGenreOpen(false);
+    setShotOpen(false);
+    setAngleOpen(false);
+    setLightOpen(false);
+    setWeatherOpen(false);
+    setMoveOpen(false);
+  };
+
   useEffect(() => {
     setHistory(getHistory());
     const interval = setInterval(() => setTipIndex(p => (p + 1) % TIPS.length), 10000);
@@ -365,13 +375,21 @@ export default function Home() {
 
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Director Controls</h3>
 
-          {/* Director Controls - 2 columns */}
+          {/* Director Controls - 2 columns, 3 rows (2x3) */}
           <div className="grid grid-cols-2 gap-2">
             {/* FOV */}
-            <Popover open={fovOpen} onOpenChange={setFovOpen}>
+            <Popover
+              open={fovOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setFovOpen(open);
+              }}
+            >
               <PopoverTrigger asChild>
-                <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
                       src={selectedFOV?.thumbnail || '/thumbnails/lens-50mm.png'}
                       alt={selectedFOV?.labelKo || 'FOV'}
@@ -384,7 +402,7 @@ export default function Home() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {FIELD_OF_VIEW.map(item => (
                     <button
                       key={item.id}
@@ -392,7 +410,7 @@ export default function Home() {
                         updateSetting('fieldOfView', item.id);
                         setFovOpen(false);
                       }}
-                      className={cn('relative aspect-video overflow-hidden rounded-lg border', settings.fieldOfView === item.id ? 'border-primary' : 'border-border')}
+                      className={cn('relative aspect-video overflow-hidden rounded', settings.fieldOfView === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
                         src={item.thumbnail || '/thumbnails/lens-50mm.png'}
@@ -400,7 +418,7 @@ export default function Home() {
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                     </button>
                   ))}
                 </div>
@@ -408,10 +426,18 @@ export default function Home() {
             </Popover>
 
             {/* Genre */}
-            <Popover open={genreOpen} onOpenChange={setGenreOpen}>
+            <Popover
+              open={genreOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setGenreOpen(open);
+              }}
+            >
               <PopoverTrigger asChild>
-                <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
                       src={selectedGenre?.thumbnail || '/thumbnails/genre-cinematic.jpg'}
                       alt={selectedGenre?.label || 'Genre'}
@@ -424,7 +450,7 @@ export default function Home() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {GENRES.map(item => (
                     <button
                       key={item.id}
@@ -432,7 +458,7 @@ export default function Home() {
                         updateSetting('genre', item.id);
                         setGenreOpen(false);
                       }}
-                      className={cn('relative aspect-video overflow-hidden rounded-lg border', settings.genre === item.id ? 'border-primary' : 'border-border')}
+                      className={cn('relative aspect-video overflow-hidden rounded', settings.genre === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
                         src={item.thumbnail || '/thumbnails/genre-cinematic.jpg'}
@@ -440,7 +466,7 @@ export default function Home() {
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                     </button>
                   ))}
                 </div>
@@ -448,10 +474,18 @@ export default function Home() {
             </Popover>
 
             {/* Shot */}
-            <Popover open={shotOpen} onOpenChange={setShotOpen}>
+            <Popover
+              open={shotOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setShotOpen(open);
+              }}
+            >
               <PopoverTrigger asChild>
-                <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
                       src={selectedShot?.thumbnail || '/thumbnails/shot-wide-shot.png'}
                       alt={selectedShot?.labelKo || 'Shot'}
@@ -464,7 +498,7 @@ export default function Home() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {SHOT_TYPES.map(item => (
                     <button
                       key={item.id}
@@ -472,7 +506,7 @@ export default function Home() {
                         updateSetting('shotType', item.id);
                         setShotOpen(false);
                       }}
-                      className={cn('relative aspect-video overflow-hidden rounded-lg border', settings.shotType === item.id ? 'border-primary' : 'border-border')}
+                      className={cn('relative aspect-video overflow-hidden rounded', settings.shotType === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
                         src={item.thumbnail || '/thumbnails/shot-wide-shot.png'}
@@ -480,7 +514,7 @@ export default function Home() {
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                     </button>
                   ))}
                 </div>
@@ -488,10 +522,18 @@ export default function Home() {
             </Popover>
 
             {/* Angle */}
-            <Popover open={angleOpen} onOpenChange={setAngleOpen}>
+            <Popover
+              open={angleOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setAngleOpen(open);
+              }}
+            >
               <PopoverTrigger asChild>
-                <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
                       src={selectedAngle?.thumbnail || '/thumbnails/angle-low-angle.png'}
                       alt={selectedAngle?.label || 'Angle'}
@@ -504,7 +546,7 @@ export default function Home() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {CAMERA_ANGLES.map(item => (
                     <button
                       key={item.id}
@@ -512,7 +554,7 @@ export default function Home() {
                         updateSetting('cameraAngle', item.id);
                         setAngleOpen(false);
                       }}
-                      className={cn('relative aspect-video overflow-hidden rounded-lg border', settings.cameraAngle === item.id ? 'border-primary' : 'border-border')}
+                      className={cn('relative aspect-video overflow-hidden rounded', settings.cameraAngle === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
                         src={item.thumbnail || '/thumbnails/angle-low-angle.png'}
@@ -520,7 +562,7 @@ export default function Home() {
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                     </button>
                   ))}
                 </div>
@@ -528,10 +570,18 @@ export default function Home() {
             </Popover>
 
             {/* Light (Time of Day) */}
-            <Popover open={lightOpen} onOpenChange={setLightOpen}>
+            <Popover
+              open={lightOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setLightOpen(open);
+              }}
+            >
               <PopoverTrigger asChild>
-                <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
                       src={selectedLight?.thumbnail || '/thumbnails/time-day.png'}
                       alt={selectedLight?.labelKo || '시간대'}
@@ -544,7 +594,7 @@ export default function Home() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {LIGHTING_STYLES.map(item => (
                     <button
                       key={item.id}
@@ -552,7 +602,7 @@ export default function Home() {
                         updateSetting('lighting', item.id);
                         setLightOpen(false);
                       }}
-                      className={cn('relative aspect-video overflow-hidden rounded-lg border', settings.lighting === item.id ? 'border-primary' : 'border-border')}
+                      className={cn('relative aspect-video overflow-hidden rounded', settings.lighting === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
                         src={item.thumbnail || '/thumbnails/time-day.png'}
@@ -560,7 +610,7 @@ export default function Home() {
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                     </button>
                   ))}
                 </div>
@@ -568,10 +618,18 @@ export default function Home() {
             </Popover>
 
             {/* Weather */}
-            <Popover open={weatherOpen} onOpenChange={setWeatherOpen}>
+            <Popover
+              open={weatherOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setWeatherOpen(open);
+              }}
+            >
               <PopoverTrigger asChild>
-                <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
                       src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                       alt={selectedWeather?.labelKo || '날씨'}
@@ -584,7 +642,7 @@ export default function Home() {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-96 p-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {WEATHER_STYLES.map(item => (
                     <button
                       key={item.id}
@@ -593,8 +651,8 @@ export default function Home() {
                         setWeatherOpen(false);
                       }}
                       className={cn(
-                        'relative aspect-video overflow-hidden rounded-lg border',
-                        settings.weather === item.id ? 'border-primary' : 'border-border'
+                        'relative aspect-video overflow-hidden rounded',
+                        settings.weather === item.id ? 'border-2 border-primary' : 'border border-border'
                       )}
                     >
                       <img
@@ -603,7 +661,7 @@ export default function Home() {
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                     </button>
                   ))}
                 </div>
@@ -612,10 +670,18 @@ export default function Home() {
 
             {/* Camera Movement - Video only */}
             {mode === 'video' && (
-              <Popover open={moveOpen} onOpenChange={setMoveOpen}>
-                <PopoverTrigger asChild>
-                  <button className="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 hover:border-primary/50">
-                    <div className="relative w-full aspect-video rounded overflow-hidden bg-muted">
+              <Popover
+                open={moveOpen}
+                onOpenChange={open => {
+                  if (open) {
+                    closeAllDirectorPopovers();
+                  }
+                  setMoveOpen(open);
+                }}
+              >
+              <PopoverTrigger asChild>
+                  <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                    <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                       <img
                         src={selectedMovement?.thumbnail || '/thumbnails/move-static.png'}
                         alt={selectedMovement?.labelKo || 'Move'}
@@ -627,8 +693,8 @@ export default function Home() {
                     </span>
                   </button>
                 </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
-                  <div className="grid grid-cols-2 gap-2">
+              <PopoverContent className="w-96 p-3" side="right">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
                     {CAMERA_MOVEMENTS.map(item => (
                       <button
                         key={item.id}
@@ -636,7 +702,7 @@ export default function Home() {
                           updateSetting('cameraMovement', item.id);
                           setMoveOpen(false);
                         }}
-                        className={cn('relative aspect-video overflow-hidden rounded-lg border', settings.cameraMovement === item.id ? 'border-primary' : 'border-border')}
+                        className={cn('relative aspect-video overflow-hidden rounded', settings.cameraMovement === item.id ? 'border-2 border-primary' : 'border border-border')}
                       >
                         <img
                           src={item.thumbnail || '/thumbnails/move-static.png'}
@@ -644,7 +710,7 @@ export default function Home() {
                           className="absolute inset-0 h-full w-full object-cover opacity-70"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                        <span className="absolute bottom-2 right-2 text-xs font-medium">{item.labelKo}</span>
+                        <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
                       </button>
                     ))}
                   </div>
@@ -660,11 +726,11 @@ export default function Home() {
             <p className="text-xs text-primary">{'💡'} {TIPS[tipIndex]}</p>
           </div>
 
-          <div className="grid flex-1 grid-cols-2 gap-4 overflow-hidden">
+          <div className="grid flex-1 grid-cols-2 gap-4 overflow-hidden items-start">
             {/* Left: Characters + Input */}
             <div className="flex flex-col overflow-hidden">
               {/* Characters */}
-              <div className="mb-3 rounded-lg border border-border bg-card p-3">
+              <div className="mb-3 rounded-lg border border-border bg-card p-3 shrink-0">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase text-muted-foreground">Characters</span>
                 </div>
@@ -780,7 +846,7 @@ export default function Home() {
                                 <select
                                   value={char.gender}
                                   onChange={e => updateCharacter(char.id, { gender: e.target.value })}
-                                  className="h-7 rounded-md border border-input bg-background px-2 text-xs"
+                                  className="h-7 rounded-md border-2 border-border bg-input px-2 text-xs focus:outline-none focus:border-primary"
                                 >
                                   <option value="">성별</option>
                                   <option value="male">남</option>
@@ -903,10 +969,13 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Output */}
-            <div className="relative flex flex-col overflow-hidden">
-              <div className="mb-2 flex items-center justify-end">
-                <div className="flex gap-1">
+            {/* Right: Output - align top with Characters */}
+            <div className="relative flex flex-col overflow-hidden min-h-full">
+              <div className="flex-1 flex flex-col min-h-[480px] overflow-hidden rounded-md border border-border bg-card">
+                <div className="flex-1 overflow-auto p-3 min-h-0">
+                  {outputText ? <p className="font-mono text-sm">{outputText}</p> : <p className="text-sm text-muted-foreground">Generated prompt will appear here...</p>}
+                </div>
+                <div className="flex items-center justify-end gap-1 shrink-0 p-2 border-t border-border">
                   <Button variant="ghost" size="sm" onClick={handleCopy} disabled={!outputText} className="h-6 gap-1 px-2 text-xs">
                     {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     {copied ? 'Copied' : 'Copy'}
@@ -915,9 +984,6 @@ export default function Home() {
                     <History className="h-3 w-3" />{history.length}
                   </Button>
                 </div>
-              </div>
-              <div className="flex-1 overflow-auto rounded-md border border-border bg-card p-3">
-                {outputText ? <p className="font-mono text-sm">{outputText}</p> : <p className="text-sm text-muted-foreground">Generated prompt will appear here...</p>}
               </div>
 
               {/* History Overlay */}
@@ -1003,6 +1069,66 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Footer - 통합 하단 */}
+      <footer className="shrink-0 border-t border-border bg-card px-6 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button type="button" className="hover:text-foreground">
+                개인정보처리방침
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[90vw] max-w-xl max-h-[80vh] overflow-hidden flex flex-col p-0" side="top">
+              <div className="p-4 border-b border-border shrink-0">
+                <h2 className="text-sm font-semibold">개인정보처리방침</h2>
+                <p className="text-[11px] text-muted-foreground mt-0.5">최종 업데이트: 2026-03-16</p>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 text-[11px] space-y-3">
+                <p>Promman(이하 &quot;본 서비스&quot;)은 「개인정보 보호법」 등 관련 법령과 Google AdSense 정책을 준수하며, 이용자의 개인정보를 최소한으로 수집·이용합니다.</p>
+                <section>
+                  <h3 className="font-semibold text-foreground">1. 개인정보의 처리 목적</h3>
+                  <p className="mt-1">서비스 제공 및 품질 향상, 광고 제공(Google AdSense) 등 명시된 목적 이외의 용도로는 이용하지 않습니다.</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">2. 수집하는 개인정보 항목</h3>
+                  <p className="mt-1">회원가입 절차를 운영하지 않으며, IP 주소·접속 로그·브라우저 정보·쿠키 등이 자동 수집·처리될 수 있습니다.</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">3. 제3자 제공 및 처리 위탁</h3>
+                  <p className="mt-1">원칙적으로 제3자에게 판매하거나 임의 제공하지 않습니다. Google AdSense를 통해 Google이 쿠키·광고 ID·방문 기록 등을 수집·이용할 수 있습니다.</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">4. Google AdSense 관련</h3>
+                  <p className="mt-1">맞춤 광고 제공을 위해 쿠키를 사용합니다. Google 광고 설정 페이지에서 맞춤 광고 노출을 관리하거나 거부할 수 있습니다.</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">5. 쿠키 사용 및 거부 방법</h3>
+                  <p className="mt-1">브라우저 설정에서 쿠키 저장 거부·삭제 가능합니다. (Chrome, Safari, Edge 등 각 설정 메뉴 참고)</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">6. 이용자의 권리</h3>
+                  <p className="mt-1">열람·정정·삭제·처리 정지 등을 요청할 수 있으며, 직접 수집하는 식별 정보는 없습니다.</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">7. 개인정보 보호책임자 및 문의처</h3>
+                  <p className="mt-1">개인정보 보호책임자: yeonho ju · juuuje1@gmail.com</p>
+                </section>
+                <section>
+                  <h3 className="font-semibold text-foreground">8. 개인정보처리방침의 변경</h3>
+                  <p className="mt-1">법령·정책 변경 시 수정될 수 있으며, 중요한 변경 시 서비스 내 공지로 안내합니다. 최신 버전은 본 페이지에서 확인할 수 있습니다.</p>
+                </section>
+              </div>
+              <div className="p-3 border-t border-border shrink-0 flex justify-end">
+                <a href="https://www.promman.com/privacy.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-xs inline-flex items-center gap-1">
+                  전문 보기 <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <span>Copyright © 2026 Promman</span>
+        </div>
+      </footer>
     </div>
   );
 }
