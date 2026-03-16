@@ -255,18 +255,29 @@ export default function Home() {
         : inputText;
     if (!combinedInput.trim()) return;
     setIsGenerating(true);
+    setOutputText('');
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
       const res = await fetch('/api/generate-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: combinedInput, settings, characters, mode }),
+        signal: controller.signal,
       });
-      const data = await res.json();
-      setOutputText(data.prompt);
+      clearTimeout(timeoutId);
+      const contentType = res.headers.get('content-type');
+      const data = contentType?.includes('application/json') ? await res.json() : { error: `${res.status} ${res.statusText}` };
+      if (!res.ok) {
+        setOutputText(`Error: ${data.error || res.statusText}\n\n(도메인 배포 시 GROQ_API_KEY 환경 변수 설정 후 재배포했는지 확인하세요.)`);
+        return;
+      }
+      const prompt = data.prompt ?? '';
+      setOutputText(prompt);
       saveToHistory({
         id: Date.now().toString(),
         inputKorean: combinedInput,
-        outputEnglish: data.prompt,
+        outputEnglish: prompt,
         mode,
         settings,
         characters,
@@ -275,6 +286,9 @@ export default function Home() {
       });
       setHistory(getHistory());
     } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Unknown error';
+      const isAbort = msg.includes('abort');
+      setOutputText(isAbort ? 'Error: 요청 시간 초과(60초). 다시 시도해 보세요.' : `Error: ${msg}\n\n(콘솔 F12 → Network 탭에서 /api/generate-prompt 응답을 확인해 보세요.)`);
       console.error(e);
     } finally {
       setIsGenerating(false);
@@ -338,7 +352,7 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
-        <Image src="/logo.png" alt="Promman" width={280} height={100} className="h-20 w-auto" priority />
+        <Image src="/logo.png" alt="Promman" width={280} height={100} className="h-20 w-[280px] object-contain object-left" priority />
         <a href="https://toss.me" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90">
           <Heart className="h-4 w-4" />
           후원하기
@@ -393,6 +407,8 @@ export default function Home() {
                     <img
                       src={selectedFOV?.thumbnail || '/thumbnails/lens-50mm.png'}
                       alt={selectedFOV?.labelKo || 'FOV'}
+                      width={16}
+                      height={9}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
@@ -415,6 +431,8 @@ export default function Home() {
                       <img
                         src={item.thumbnail || '/thumbnails/lens-50mm.png'}
                         alt={item.labelKo}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -441,6 +459,8 @@ export default function Home() {
                     <img
                       src={selectedGenre?.thumbnail || '/thumbnails/genre-cinematic.jpg'}
                       alt={selectedGenre?.label || 'Genre'}
+                      width={16}
+                      height={9}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
@@ -463,6 +483,8 @@ export default function Home() {
                       <img
                         src={item.thumbnail || '/thumbnails/genre-cinematic.jpg'}
                         alt={item.labelKo}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -489,6 +511,8 @@ export default function Home() {
                     <img
                       src={selectedShot?.thumbnail || '/thumbnails/shot-wide-shot.png'}
                       alt={selectedShot?.labelKo || 'Shot'}
+                      width={16}
+                      height={9}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
@@ -511,6 +535,8 @@ export default function Home() {
                       <img
                         src={item.thumbnail || '/thumbnails/shot-wide-shot.png'}
                         alt={item.labelKo}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -537,6 +563,8 @@ export default function Home() {
                     <img
                       src={selectedAngle?.thumbnail || '/thumbnails/angle-low-angle.png'}
                       alt={selectedAngle?.label || 'Angle'}
+                      width={16}
+                      height={9}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
@@ -559,6 +587,8 @@ export default function Home() {
                       <img
                         src={item.thumbnail || '/thumbnails/angle-low-angle.png'}
                         alt={item.labelKo}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -585,6 +615,8 @@ export default function Home() {
                     <img
                       src={selectedLight?.thumbnail || '/thumbnails/time-day.png'}
                       alt={selectedLight?.labelKo || '시간대'}
+                      width={16}
+                      height={9}
                       className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
@@ -607,6 +639,8 @@ export default function Home() {
                       <img
                         src={item.thumbnail || '/thumbnails/time-day.png'}
                         alt={item.labelKo}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -631,9 +665,11 @@ export default function Home() {
                 <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                   <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
-                      src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
-                      alt={selectedWeather?.labelKo || '날씨'}
-                      className="absolute inset-0 w-full h-full object-cover"
+src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
+                        alt={selectedWeather?.labelKo || '날씨'}
+                        width={16}
+                        height={9}
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
                   </div>
                   <span className="text-xs font-medium">
@@ -658,6 +694,8 @@ export default function Home() {
                       <img
                         src={item.thumbnail || '/thumbnails/weather-clear.png'}
                         alt={item.labelKo}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -685,6 +723,8 @@ export default function Home() {
                       <img
                         src={selectedMovement?.thumbnail || '/thumbnails/move-static.png'}
                         alt={selectedMovement?.labelKo || 'Move'}
+                        width={16}
+                        height={9}
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     </div>
@@ -707,6 +747,8 @@ export default function Home() {
                         <img
                           src={item.thumbnail || '/thumbnails/move-static.png'}
                           alt={item.labelKo}
+                          width={16}
+                          height={9}
                           className="absolute inset-0 h-full w-full object-cover opacity-70"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -748,6 +790,8 @@ export default function Home() {
                           <img
                             src="/thumbnails/char-plus.png"
                             alt="Add character disabled"
+                            width={1}
+                            height={1}
                             className="absolute inset-0 h-full w-full object-cover opacity-60"
                           />
                         </button>
@@ -767,6 +811,8 @@ export default function Home() {
                                 <img
                                   src={`/thumbnails/char-${slot}.png`}
                                   alt={char.name}
+                                  width={1}
+                                  height={1}
                                   className="absolute inset-0 h-full w-full object-cover"
                                 />
                               </div>
@@ -784,6 +830,8 @@ export default function Home() {
                               <img
                                 src={`/thumbnails/char-${slot}.png`}
                                 alt={char.name}
+                                width={1}
+                                height={1}
                                 className="absolute inset-0 h-full w-full object-cover"
                               />
                             </button>
@@ -801,6 +849,8 @@ export default function Home() {
                             <img
                               src="/thumbnails/char-plus.png"
                               alt="Add character"
+                              width={1}
+                              height={1}
                               className="absolute inset-0 h-full w-full object-cover"
                             />
                           </button>
