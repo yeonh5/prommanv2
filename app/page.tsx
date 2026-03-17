@@ -18,7 +18,6 @@ const TIPS = [
   '조명 설정은 분위기를 크게 좌우합니다.',
   '카메라 앵글 변경만으로도 완전히 다른 느낌의 장면을 만들 수 있어요',
   'AI의 특성상 버드샷의 구현이 약합니다. 생성을 여러번 시도하세요.',
-  '후원하기 버튼이 아직 미구현입니다ㅜㅜ',
   '화낸다. 보다는 차가운 분위기라는 무드 표현이 더 시네마틱한 결과물을 얻을 수 있습니다.',
   '실시간으로 개선 중입니다. 마음에 들지않는 결과가 나오더라도 넓은 마음으로 다시 시도해주세요.',
   '프롬프트 생성기이다보니 이미지 생성 기능을 직접 제공하지는 않습니다.',
@@ -359,10 +358,14 @@ export default function Home() {
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
         <Image src="/logo.png" alt="Promman" width={280} height={100} className="h-20 w-[280px] object-contain object-left" priority />
-        <a href="https://toss.me" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90">
+        <a
+          href="https://ko-fi.com/Q5Q51W3GLT"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#FF5E5B] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
+        >
           <Heart className="h-4 w-4" />
-          후원하기
-          <ExternalLink className="h-3 w-3" />
+          Ko-fi로 후원하기
         </a>
       </header>
 
