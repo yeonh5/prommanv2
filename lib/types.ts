@@ -656,6 +656,7 @@ export interface DirectorSettings {
   weather?: string;
   fieldOfView?: string;
   cameraMovement?: string;
+  location?: string;
   handheldIntensity?: number;
   aspectRatio?: string;
 }

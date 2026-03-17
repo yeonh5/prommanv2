@@ -446,7 +446,7 @@ export default function Home() {
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3 translate-y-[-220px]" side="right">
+              <PopoverContent className="w-96 p-3" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {FIELD_OF_VIEW.map(item => (
                     <button
