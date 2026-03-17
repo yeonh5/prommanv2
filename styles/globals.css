@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -93,6 +94,7 @@
 
 @theme inline {
   --font-sans: 'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-en: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -140,5 +142,14 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
+  }
+  html[lang='ko'] body {
+    letter-spacing: -0.05rem;
+    font-weight: 500;
+  }
+  :lang(en),
+  .font-en {
+    font-family: var(--font-en);
+    letter-spacing: 0;
   }
 }
