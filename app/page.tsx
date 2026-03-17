@@ -14,9 +14,15 @@ import { getHistory, saveToHistory, toggleFavorite, deleteHistoryItem } from '@/
 
 const TIPS = [
   '캐릭터 이름을 프롬프트에서 직접 사용하세요.',
-  '구체적인 감정과 동작을 포함하면 더 좋은 결과를 얻을 수 있어요',
+  'bolder studio에서 만들고 서비스합니다.',
   '조명 설정은 분위기를 크게 좌우합니다.',
-  '카메라 앵글 변경만으로도 완전히 다른 느낌의 장면을 만들 수 있어요',
+  '카메라 앵글 변경만으로도 완전히 다른 느낌의 장면을 만들 수 있어요'
+  'AI의 특성상 버드샷의 구현이 약합니다. 생성을 여러번 시도하세요.',
+  '후원하기 버튼이 아직 미구현입니다ㅜㅜ',
+  '화낸다. 보다는 차가운 분위기라는 무드 표현이 더 시네마틱한 결과물을 얻을 수 있습니다.',
+  '실시간으로 개선 중입니다. 마음에 들지않는 결과가 나오더라도 넓은 마음으로 다시 시도해주세요.',
+  '프롬프트 생성기이다보니 이미지 생성 기능을 직접 제공하지는 않습니다.',
+  '볼더 모카 베타 팔로미노 엔에이유 렛츠고'
 ];
 
 const defaultSettings: DirectorSettings = {
@@ -1023,7 +1029,15 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
             <div className="relative flex flex-col overflow-hidden min-h-full">
               <div className="flex-1 flex flex-col min-h-[480px] overflow-hidden rounded-md border border-border bg-card">
                 <div className="flex-1 overflow-auto p-3 min-h-0">
-                  {outputText ? <p className="font-mono text-sm">{outputText}</p> : <p className="text-sm text-muted-foreground">Generated prompt will appear here...</p>}
+                  {outputText ? (
+                    <pre className="font-mono text-sm whitespace-pre-wrap">
+                      {outputText}
+                    </pre>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Generated prompt will appear here...
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center justify-end gap-1 shrink-0 p-2 border-t border-border">
                   <Button variant="ghost" size="sm" onClick={handleCopy} disabled={!outputText} className="h-6 gap-1 px-2 text-xs">
