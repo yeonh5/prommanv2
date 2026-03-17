@@ -75,6 +75,7 @@ export interface DirectorSettings {
   cameraMovement?: string;
   handheldIntensity?: number;
   aspectRatio?: string;
+  location?: string;
 }
 
 export interface PromptHistoryItem {
@@ -293,6 +294,81 @@ export const WEATHER_STYLES: WeatherStyle[] = [
     icon: 'SNW',
     thumbnail: '/thumbnails/weather-snow.webp',
   },
+  {
+    id: 'fog',
+    label: 'Fog',
+    labelKo: '안개',
+    description: 'Heavy fog with low visibility, soft diffusion and haze',
+    icon: 'FOG',
+    thumbnail: '/thumbnails/weather-fog.webp',
+  },
+  {
+    id: 'dust',
+    label: 'Yellow Dust',
+    labelKo: '황사',
+    description: 'Yellow dust haze, muted contrast, warm dusty atmosphere',
+    icon: 'DST',
+    thumbnail: '/thumbnails/weather-dust.webp',
+  },
+  {
+    id: 'thunder',
+    label: 'Thunderstorm',
+    labelKo: '천둥/번개',
+    description: 'Thunderstorm with lightning, dramatic clouds and intense atmosphere',
+    icon: 'THD',
+    thumbnail: '/thumbnails/weather-thunder.webp',
+  },
+];
+
+export const LOCATION_STYLES: LocationStyle[] = [
+  {
+    id: 'indoor',
+    label: 'Indoor',
+    labelKo: '실내',
+    description: 'Generic indoor location, walls and furniture visible',
+    icon: 'IND',
+    thumbnail: '/thumbnails/location-indoor.webp',
+  },
+  {
+    id: 'studio',
+    label: 'Studio',
+    labelKo: '실내(스튜디오)',
+    description: 'Controlled studio set with lighting and backdrops',
+    icon: 'STD',
+    thumbnail: '/thumbnails/location-studio.webp',
+  },
+  {
+    id: 'city',
+    label: 'City',
+    labelKo: '도시',
+    description: 'City streets, buildings and urban lights',
+    icon: 'CTY',
+    thumbnail: '/thumbnails/location-city.webp',
+  },
+  {
+    id: 'forest',
+    label: 'Forest',
+    labelKo: '숲',
+    description: 'Dense forest with trees and foliage',
+    icon: 'FOR',
+    thumbnail: '/thumbnails/location-forest.webp',
+  },
+  {
+    id: 'sea',
+    label: 'Sea',
+    labelKo: '바다',
+    description: 'Sea or ocean, shoreline and waves',
+    icon: 'SEA',
+    thumbnail: '/thumbnails/location-sea.webp',
+  },
+  {
+    id: 'space',
+    label: 'Space',
+    labelKo: '우주',
+    description: 'Outer space with stars, planets or nebulae',
+    icon: 'SPC',
+    thumbnail: '/thumbnails/location-space.webp',
+  },
 ];
 
 export const GENRES: Genre[] = [
@@ -419,6 +495,30 @@ export const CAMERA_MOVEMENTS: CameraMovement[] = [
     icon: 'ARC',
     thumbnail: '/thumbnails/move-arc.gif',
   },
+  {
+    id: 'crane',
+    label: 'Crane',
+    labelKo: '크레인',
+    description: 'Camera moves vertically and horizontally on a crane arm, dramatic rising or descending shots',
+    icon: 'CRN',
+    thumbnail: '/thumbnails/move-crane.gif',
+  },
+  {
+    id: 'tracking',
+    label: 'Tracking',
+    labelKo: '트래킹',
+    description: 'Camera moves alongside or behind the subject, following their movement through space',
+    icon: 'TRK',
+    thumbnail: '/thumbnails/move-tracking.gif',
+  },
+  {
+    id: 'long-take',
+    label: 'Long Take',
+    labelKo: '롱테이크',
+    description: 'Extended continuous shot without cutting, fluid camera movement through the scene',
+    icon: 'LNG',
+    thumbnail: '/thumbnails/move-long-take.gif',
+  },
 ];
 
 export const FIELD_OF_VIEW = [
@@ -513,6 +613,15 @@ export interface LightingStyle {
 }
 
 export interface WeatherStyle {
+  id: string;
+  label: string;
+  labelKo: string;
+  description: string;
+  icon: string;
+  thumbnail?: string;
+}
+
+export interface LocationStyle {
   id: string;
   label: string;
   labelKo: string;

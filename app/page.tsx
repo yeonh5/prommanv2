@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Copy, Check, Sparkles, Image as ImageIcon, Video, Plus, ChevronDown, History, Trash2, X, Heart, ExternalLink, Star, Pencil } from 'lucide-react';
-import { GENRES, SHOT_TYPES, CAMERA_ANGLES, LIGHTING_STYLES, WEATHER_STYLES, CAMERA_MOVEMENTS, FIELD_OF_VIEW } from '@/lib/types';
+import { GENRES, SHOT_TYPES, CAMERA_ANGLES, LIGHTING_STYLES, WEATHER_STYLES, CAMERA_MOVEMENTS, FIELD_OF_VIEW, LOCATION_STYLES } from '@/lib/types';
 import type { Character, DirectorSettings, PrommanOutputMode } from '@/lib/types';
 import { getHistory, saveToHistory, toggleFavorite, deleteHistoryItem } from '@/lib/storage';
 
@@ -32,6 +32,7 @@ const defaultSettings: DirectorSettings = {
   weather: 'clear',
   fieldOfView: '25mm',
   cameraMovement: 'static',
+  location: 'indoor',
 };
 
 const CHARACTER_SLOT_NAMES = ['성재', '진섭', '범철', '현식'] as const;
@@ -202,6 +203,18 @@ const MOVEMENT_EXPLANATIONS: Record<string, { title: string; body: string }> = {
     title: '아크 (Arc)',
     body: '대치 중인 두 인물 사이의 팽팽한 긴장감을 입체적으로 그리거나, 로맨틱한 순간에 두 사람만의 세상을 몽환적으로 감싸 안는 느낌을 줍니다.',
   },
+  crane: {
+    title: '크레인 (Crane)',
+    body: '카메라를 수직/대각선으로 크게 들어 올리거나 내리며, 장면의 스케일을 웅장하게 보여주거나 사건의 결말을 부감으로 조망하며 여운을 남길 때 사용합니다.',
+  },
+  tracking: {
+    title: '트래킹 (Tracking)',
+    body: '피사체의 옆이나 뒤를 나란히 따라가며 촬영하여, 캐릭터와 함께 현장을 걷는 듯한 생동감과 관찰자 시점의 역동성을 동시에 부여합니다.',
+  },
+  'long-take': {
+    title: '롱테이크 (Long Take)',
+    body: '컷 없이 긴 호흡으로 장면을 유지하여 인물의 감정선을 깨뜨리지 않고 밀도 있게 전달하며, 실제 시간이 흐르는 듯한 극도의 사실감을 연출합니다.',
+  },
 };
 
 export default function Home() {
@@ -213,9 +226,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
-  const [characters, setCharacters] = useState<Character[]>([
-    { id: 'default-a', name: CHARACTER_SLOT_NAMES[0], gender: '', age: '', appearance: '', clothing: '' },
-  ]);
+  const [characters, setCharacters] = useState<(Character | null)[]>([null, null, null, null]);
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
   const [tipIndex, setTipIndex] = useState(0);
   const [settings, setSettings] = useState<DirectorSettings>(defaultSettings);
@@ -225,6 +236,7 @@ export default function Home() {
   const [angleOpen, setAngleOpen] = useState(false);
   const [lightOpen, setLightOpen] = useState(false);
   const [weatherOpen, setWeatherOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
 
   const selectedGenre = GENRES.find(g => g.id === settings.genre);
@@ -232,6 +244,7 @@ export default function Home() {
   const selectedAngle = CAMERA_ANGLES.find(a => a.id === settings.cameraAngle);
   const selectedLight = LIGHTING_STYLES.find(l => l.id === settings.lighting);
   const selectedWeather = WEATHER_STYLES.find(w => w.id === settings.weather);
+  const selectedLocation = LOCATION_STYLES.find(l => l.id === settings.location);
   const selectedFOV = FIELD_OF_VIEW.find(f => f.id === settings.fieldOfView);
   const selectedMovement = CAMERA_MOVEMENTS.find(m => m.id === settings.cameraMovement);
 
@@ -244,6 +257,7 @@ export default function Home() {
     setAngleOpen(false);
     setLightOpen(false);
     setWeatherOpen(false);
+    setLocationOpen(false);
     setMoveOpen(false);
   };
 
@@ -259,6 +273,9 @@ export default function Home() {
         ? [inputText, videoDetailText].filter(Boolean).join('\n')
         : inputText;
     if (!combinedInput.trim()) return;
+    const activeCharacters = characters.filter(
+      (c): c is Character => Boolean(c),
+    );
     setIsGenerating(true);
     setOutputText('');
     try {
@@ -267,7 +284,7 @@ export default function Home() {
       const res = await fetch('/api/generate-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: combinedInput, settings, characters, mode }),
+        body: JSON.stringify({ input: combinedInput, settings, characters: activeCharacters, mode }),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -285,7 +302,7 @@ export default function Home() {
         outputEnglish: prompt,
         mode,
         settings,
-        characters,
+        characters: activeCharacters,
         isFavorite: false,
         timestamp: Date.now(),
       });
@@ -307,8 +324,8 @@ export default function Home() {
   };
 
   const addCharacter = () => {
-    if (characters.length >= 4) return;
-    const slotIndex = characters.length;
+    const slotIndex = characters.findIndex(c => !c);
+    if (slotIndex === -1) return;
     const name = CHARACTER_SLOT_NAMES[slotIndex] ?? 'Character';
     const newChar: Character = {
       id: Date.now().toString(),
@@ -318,15 +335,16 @@ export default function Home() {
       appearance: '',
       clothing: '',
     };
-    setCharacters([...characters, newChar]);
+    const next = [...characters];
+    next[slotIndex] = newChar;
+    setCharacters(next);
   };
 
   const ensureCharacterAtIndex = (index: number) => {
     if (index > 3) return;
-    const next: Character[] = [...characters];
-    // 이미 해당 슬롯에 캐릭터가 있으면 아무 것도 하지 않음
-    if (next[index]) return;
+    if (characters[index]) return;
     const name = CHARACTER_SLOT_NAMES[index] ?? 'Character';
+    const next = [...characters];
     next[index] = {
       id: Date.now().toString() + '-' + index.toString(),
       name,
@@ -339,11 +357,13 @@ export default function Home() {
   };
 
   const updateCharacter = (id: string, updates: Partial<Character>) => {
-    setCharacters(characters.map(c => c.id === id ? { ...c, ...updates } : c));
+    setCharacters(prev =>
+      prev.map(c => (c && c.id === id ? { ...c, ...updates } : c)),
+    );
   };
 
   const removeCharacter = (id: string) => {
-    setCharacters(characters.filter(c => c.id !== id));
+    setCharacters(prev => prev.map(c => (c && c.id === id ? null : c)));
   };
 
   const updateSetting = (key: keyof DirectorSettings, value: string) => {
@@ -362,7 +382,7 @@ export default function Home() {
           href="https://ko-fi.com/Q5Q51W3GLT"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-lg bg-[#FF5E5B] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
         >
           <Heart className="h-4 w-4" />
           Ko-fi로 후원하기
@@ -426,7 +446,7 @@ export default function Home() {
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
+              <PopoverContent className="w-96 p-3 translate-y-[-220px]" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {FIELD_OF_VIEW.map(item => (
                     <button
@@ -435,17 +455,22 @@ export default function Home() {
                         updateSetting('fieldOfView', item.id);
                         setFovOpen(false);
                       }}
-                      className={cn('relative aspect-video overflow-hidden rounded', settings.fieldOfView === item.id ? 'border-2 border-primary' : 'border border-border')}
+                      className={cn(
+                        'relative aspect-video overflow-hidden rounded',
+                        settings.fieldOfView === item.id ? 'border-2 border-primary' : 'border border-border',
+                      )}
                     >
                       <img
-                      src={item.thumbnail || '/thumbnails/lens-50mm.webp'}
+                        src={item.thumbnail || '/thumbnails/lens-50mm.webp'}
                         alt={item.labelKo}
                         width={16}
                         height={9}
                         className="absolute inset-0 h-full w-full object-cover opacity-70"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">
+                        {item.labelKo}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -478,7 +503,7 @@ export default function Home() {
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
+              <PopoverContent className="w-96 p-3" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {GENRES.map(item => (
                     <button
@@ -530,7 +555,7 @@ export default function Home() {
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
+              <PopoverContent className="w-96 p-3" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {SHOT_TYPES.map(item => (
                     <button
@@ -582,7 +607,7 @@ export default function Home() {
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
+              <PopoverContent className="w-96 p-3" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {CAMERA_ANGLES.map(item => (
                     <button
@@ -634,7 +659,7 @@ export default function Home() {
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
+              <PopoverContent className="w-96 p-3" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {LIGHTING_STYLES.map(item => (
                     <button
@@ -686,7 +711,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                   </span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-3">
+              <PopoverContent className="w-96 p-3" side="right">
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {WEATHER_STYLES.map(item => (
                     <button
@@ -715,6 +740,61 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
               </PopoverContent>
             </Popover>
 
+            {/* Location */}
+            <Popover
+              open={locationOpen}
+              onOpenChange={open => {
+                if (open) {
+                  closeAllDirectorPopovers();
+                }
+                setLocationOpen(open);
+              }}
+            >
+              <PopoverTrigger asChild>
+                <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
+                  <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
+                    <img
+                      src={selectedLocation?.thumbnail || '/thumbnails/location-indoor.webp'}
+                      alt={selectedLocation?.labelKo || '장소'}
+                      width={16}
+                      height={9}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  </div>
+                  <span className="text-xs font-medium">
+                    {selectedLocation?.labelKo || '장소'}
+                  </span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-96 p-3" side="right">
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  {LOCATION_STYLES.map(item => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        updateSetting('location', item.id);
+                        setLocationOpen(false);
+                      }}
+                      className={cn(
+                        'relative aspect-video overflow-hidden rounded',
+                        settings.location === item.id ? 'border-2 border-primary' : 'border border-border'
+                      )}
+                    >
+                      <img
+                        src={item.thumbnail || '/thumbnails/location-indoor.webp'}
+                        alt={item.labelKo}
+                        width={16}
+                        height={9}
+                        className="absolute inset-0 h-full w-full object-cover opacity-70"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                      <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+
             {/* Camera Movement - Video only */}
             {mode === 'video' && (
               <Popover
@@ -726,24 +806,24 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                   setMoveOpen(open);
                 }}
               >
-              <PopoverTrigger asChild>
+                <PopoverTrigger asChild>
                   <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                     <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                       <img
                         src={selectedMovement?.thumbnail || '/thumbnails/move-static.webp'}
                         alt={selectedMovement?.labelKo || 'Move'}
-                        width={16}
-                        height={9}
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     </div>
                     <span className="text-xs font-medium">
-                      {selectedMovement?.labelKo || 'Move'}
+                      {selectedMovement?.labelKo || '무빙'}
                     </span>
                   </button>
                 </PopoverTrigger>
-              <PopoverContent className="w-96 p-3" side="right">
-                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                
+                {/* 다른 팝오버(2열/w-96)와 썸네일 크기를 맞추기 위해 너비를 w-[768px]로 설정 (2배 크기) */}
+                <PopoverContent className="w-[768px] p-3 bg-card border-border shadow-2xl" side="right">
+                  <div className="grid grid-cols-4 gap-2 text-[11px]">
                     {CAMERA_MOVEMENTS.map(item => (
                       <button
                         key={item.id}
@@ -751,17 +831,26 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                           updateSetting('cameraMovement', item.id);
                           setMoveOpen(false);
                         }}
-                        className={cn('relative aspect-video overflow-hidden rounded', settings.cameraMovement === item.id ? 'border-2 border-primary' : 'border border-border')}
+                        className={cn(
+                          'group relative aspect-video overflow-hidden rounded-md transition-all',
+                          settings.cameraMovement === item.id 
+                            ? 'ring-2 ring-primary ring-offset-1 ring-offset-background' 
+                            : 'border border-border hover:border-primary/50'
+                        )}
                       >
                         <img
                           src={item.thumbnail || '/thumbnails/move-static.webp'}
                           alt={item.labelKo}
-                          width={16}
-                          height={9}
-                          className="absolute inset-0 h-full w-full object-cover opacity-70"
+                          className={cn(
+                            "absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105",
+                            settings.cameraMovement === item.id ? "opacity-100" : "opacity-60"
+                          )}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                        <span className="absolute bottom-1 right-1 text-[11px] font-medium">{item.labelKo}</span>
+                        {/* 텍스트 시인성을 위한 하단 그라데이션 */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80" />
+                        <span className="absolute bottom-1.5 right-2 font-medium text-white text-[10px]">
+                          {item.labelKo}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -810,25 +899,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
 
                         // Slot filled with character
                         if (char) {
-                          // 1번 슬롯(A): 삭제/호버 효과 없음
-                          if (index === 0) {
-                            return (
-                              <div
-                                key={char.id}
-                                className="relative h-14 w-14 overflow-hidden bg-transparent"
-                              >
-                                <img
-                                  src={`/thumbnails/char-${slot}.webp`}
-                                  alt={char.name}
-                                  width={1}
-                                  height={1}
-                                  className="absolute inset-0 h-full w-full object-cover"
-                                />
-                              </div>
-                            );
-                          }
-
-                          // 2~4번 슬롯: 클릭 시 바로 삭제 (마우스오버 X 제거)
+                          // 모든 슬롯(A~D): 클릭 시 해당 슬롯 토글(삭제)
                           return (
                             <button
                               key={char.id}
@@ -871,19 +942,19 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                   {settings.shotType === 'establishing'
                     ? // 에스타블리싱 샷에서는 이름도 모두 비활성 자리만 유지
                       ['a', 'b', 'c', 'd'].map(slot => (
-                        <div key={slot} className="w-14 text-xs text-center text-muted-foreground" />
+                        <div key={slot} className="h-5 w-14 text-xs text-center text-muted-foreground" />
                       ))
                     : ['a', 'b', 'c', 'd'].map((slot, index) => {
                         const char = characters[index];
                         if (!char) {
                           // 빈 슬롯은 이름 없이 자리만 유지 (썸네일 크기에 맞춰 폭 조정)
-                          return <div key={slot} className="w-14 text-xs text-center text-muted-foreground" />;
+                          return <div key={slot} className="h-5 w-14 text-xs text-center text-muted-foreground" />;
                         }
                         return (
                           <Popover key={char.id}>
                             <PopoverTrigger asChild>
-                              <button className="flex w-14 items-center justify-center gap-1 truncate text-xs text-center text-muted-foreground hover:text-foreground">
-                                <span className="truncate">{char.name || `Character ${slot.toUpperCase()}`}</span>
+                              <button className="flex h-5 w-14 items-center justify-center gap-1 truncate text-xs text-center text-muted-foreground hover:text-foreground">
+                                <span className="truncate max-w-full">{char.name || `Character ${slot.toUpperCase()}`}</span>
                                 <Pencil className="h-3 w-3 shrink-0 text-muted-foreground -translate-y-px" />
                               </button>
                             </PopoverTrigger>
@@ -965,63 +1036,63 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                   />
                 </div>
               )}
-              <Button onClick={handleGenerate} disabled={!(mode === 'video' ? (inputText.trim() || videoDetailText.trim()) : inputText.trim()) || isGenerating} className="mt-2 self-start gap-2">
+              <Button onClick={handleGenerate} disabled={!(mode === 'video' ? (inputText.trim() || videoDetailText.trim()) : inputText.trim()) || isGenerating} className="mt-2 self-start gap-2 tracking-[0.02em]">
                 <Sparkles className="h-4 w-4" />
                 {isGenerating ? 'Generating...' : 'Generate'}
               </Button>
               {/* 실시간 설정 설명 박스 */}
-              <div className="mt-3 w-full rounded-md border border-border bg-card/60 p-3 text-xs text-muted-foreground">
-                <div className="mb-2 font-semibold text-foreground text-sm">
+              <div className="mt-3 w-full rounded-md border border-border bg-card/60 p-3 text-sm text-muted-foreground">
+                <div className="mb-2 font-semibold text-foreground text-base">
                   <span className="mr-1 text-base">🎬</span>
                   <span>어떤 장면이 필요한가요?</span>
                 </div>
                 {selectedFOV && FOV_EXPLANATIONS[selectedFOV.id] && (
-                  <p className="mb-1 text-[11px]">
+                  <p className="mb-1 text-[13px]">
                     <span className="font-semibold text-foreground">
-                      {FOV_EXPLANATIONS[selectedFOV.id].title}
+                      {FOV_EXPLANATIONS[selectedFOV.id].title.trim()}
                     </span>{' '}
                     <span className="text-muted-foreground">
-                      {FOV_EXPLANATIONS[selectedFOV.id].body}
+                      {FOV_EXPLANATIONS[selectedFOV.id].body.trim()}
                     </span>
                   </p>
                 )}
                 {selectedGenre && GENRE_EXPLANATIONS[selectedGenre.id] && (
-                  <p className="mb-1 text-[11px]">
+                  <p className="mb-1 text-[13px]">
                     <span className="font-semibold text-foreground">
-                      {GENRE_EXPLANATIONS[selectedGenre.id].title}
+                      {GENRE_EXPLANATIONS[selectedGenre.id].title.trim()}
                     </span>{' '}
                     <span className="text-muted-foreground">
-                      {GENRE_EXPLANATIONS[selectedGenre.id].body}
+                      {GENRE_EXPLANATIONS[selectedGenre.id].body.trim()}
                     </span>
                   </p>
                 )}
                 {selectedShot && SHOT_EXPLANATIONS[selectedShot.id] && (
-                  <p className="mb-1 text-[11px]">
+                  <p className="mb-1 text-[13px]">
                     <span className="font-semibold text-foreground">
-                      {SHOT_EXPLANATIONS[selectedShot.id].title}
+                      {SHOT_EXPLANATIONS[selectedShot.id].title.trim()}
                     </span>{' '}
                     <span className="text-muted-foreground">
-                      {SHOT_EXPLANATIONS[selectedShot.id].body}
+                      {SHOT_EXPLANATIONS[selectedShot.id].body.trim()}
                     </span>
                   </p>
                 )}
                 {selectedAngle && ANGLE_EXPLANATIONS[selectedAngle.id] && (
-                  <p className="mb-1 text-[11px]">
+                  <p className="mb-1 text-[13px]">
                     <span className="font-semibold text-foreground">
-                      {ANGLE_EXPLANATIONS[selectedAngle.id].title}
+                      {ANGLE_EXPLANATIONS[selectedAngle.id].title.trim()}
                     </span>{' '}
                     <span className="text-muted-foreground">
-                      {ANGLE_EXPLANATIONS[selectedAngle.id].body}
+                      {ANGLE_EXPLANATIONS[selectedAngle.id].body.trim()}
                     </span>
                   </p>
                 )}
                 {mode === 'video' && selectedMovement && MOVEMENT_EXPLANATIONS[selectedMovement.id] && (
-                  <p className="mb-1 text-[11px]">
+                  <p className="mb-1 text-[13px]">
                     <span className="font-semibold text-foreground">
-                      {MOVEMENT_EXPLANATIONS[selectedMovement.id].title}
+                      {MOVEMENT_EXPLANATIONS[selectedMovement.id].title.trim()}
                     </span>{' '}
                     <span className="text-muted-foreground">
-                      {MOVEMENT_EXPLANATIONS[selectedMovement.id].body}
+                      {MOVEMENT_EXPLANATIONS[selectedMovement.id].body.trim()}
                     </span>
                   </p>
                 )}
@@ -1146,7 +1217,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                 개인정보처리방침
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-[90vw] max-w-xl max-h-[80vh] overflow-hidden flex flex-col p-0" side="top">
+            <PopoverContent className="w-[90vw] max-w-xl max-h-[80vh] overflow-hidden flex flex-col p-0" side="bottom">
               <div className="p-4 border-b border-border shrink-0">
                 <h2 className="text-sm font-semibold">개인정보처리방침</h2>
                 <p className="text-[11px] text-muted-foreground mt-0.5">최종 업데이트: 2026-03-16</p>

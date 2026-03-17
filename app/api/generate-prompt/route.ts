@@ -391,7 +391,7 @@ function buildSpecSkeleton(
     subjectCount,
     subjectDescription: describeCharacters(characters),
     action: normalizeText(input, 'subject present in scene'),
-    environment: '',
+    environment: settings.location ? `Location: ${settings.location}` : '',
     moodVisuals: [],
     continuityDetails: [],
     forbiddenElements: [],

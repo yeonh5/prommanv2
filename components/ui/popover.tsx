@@ -95,7 +95,7 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
       if (side === 'right') {
         setPosition({ top: rect.top, left: rect.right + 8 });
       } else if (side === 'top') {
-        setPosition({ top: undefined, bottom: window.innerHeight - rect.top + 8, left: rect.left });
+        setPosition({ bottom: window.innerHeight - rect.top + 8, left: rect.left });
       } else {
         setPosition({ top: rect.bottom + 8, left: rect.left });
       }
