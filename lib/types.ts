@@ -106,7 +106,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '익스트림 클로즈업',
     description: 'Detail of eyes, lips, or specific feature',
     icon: 'ECU',
-    thumbnail: '/thumbnails/shot-extreme-close-up.png',
+    thumbnail: '/thumbnails/shot-extreme-close-up.webp',
   },
   {
     id: 'close',
@@ -114,7 +114,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '클로즈업',
     description: 'Face fills the frame',
     icon: 'CU',
-    thumbnail: '/thumbnails/shot-close-up.png',
+    thumbnail: '/thumbnails/shot-close-up.webp',
   },
   {
     id: 'medium-close',
@@ -122,7 +122,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '미디엄 클로즈업',
     description: 'Chest and above',
     icon: 'MCU',
-    thumbnail: '/thumbnails/shot-medium-close-up.png',
+    thumbnail: '/thumbnails/shot-medium-close-up.webp',
   },
   {
     id: 'medium',
@@ -130,7 +130,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '미디엄 샷',
     description: 'Waist up framing',
     icon: 'MS',
-    thumbnail: '/thumbnails/shot-medium-shot.png',
+    thumbnail: '/thumbnails/shot-medium-shot.webp',
   },
   {
     id: 'full',
@@ -138,7 +138,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '풀 샷',
     description: 'Subject from head to toe',
     icon: 'FS',
-    thumbnail: '/thumbnails/shot-medium-wide-shot.png',
+    thumbnail: '/thumbnails/shot-medium-wide-shot.webp',
   },
   {
     id: 'wide',
@@ -146,7 +146,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '와이드 샷',
     description: 'Full body with environment context',
     icon: 'WS',
-    thumbnail: '/thumbnails/shot-wide-shot.png',
+    thumbnail: '/thumbnails/shot-wide-shot.webp',
   },
   {
     id: 'extreme-wide',
@@ -154,7 +154,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '익스트림 와이드',
     description: 'Shows vast landscapes or environments',
     icon: 'EWS',
-    thumbnail: '/thumbnails/shot-extreme-wide-shot.png',
+    thumbnail: '/thumbnails/shot-extreme-wide-shot.webp',
   },
   {
     id: 'establishing',
@@ -162,7 +162,7 @@ export const SHOT_TYPES: ShotType[] = [
     labelKo: '에스타블리싱 샷',
     description: 'Introductory shot to establish location and context',
     icon: 'EST',
-    thumbnail: '/thumbnails/shot-establishing-shot.png',
+    thumbnail: '/thumbnails/shot-establishing-shot.webp',
   },
 ];
 
@@ -173,7 +173,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '아이 레벨',
     description: 'Natural, neutral perspective',
     icon: 'EYE',
-    thumbnail: '/thumbnails/angle-eye-level.png',
+    thumbnail: '/thumbnails/angle-eye-level.webp',
   },
   {
     id: 'low-angle',
@@ -181,7 +181,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '로우 앵글',
     description: 'Looking up, subject appears powerful',
     icon: 'LOW',
-    thumbnail: '/thumbnails/angle-low-angle.png',
+    thumbnail: '/thumbnails/angle-low-angle.webp',
   },
   {
     id: 'high-angle',
@@ -189,7 +189,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '하이 앵글',
     description: 'Looking down, subject appears vulnerable',
     icon: 'HI',
-    thumbnail: '/thumbnails/angle-high-angle.png',
+    thumbnail: '/thumbnails/angle-high-angle.webp',
   },
   {
     id: 'dutch-angle',
@@ -197,7 +197,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '더치 앵글',
     description: 'Tilted frame, creates tension',
     icon: 'DTH',
-    thumbnail: '/thumbnails/angle-dutch-angle.png',
+    thumbnail: '/thumbnails/angle-dutch-angle.webp',
   },
   {
     id: 'birds-eye',
@@ -205,7 +205,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '버즈 아이',
     description: 'Directly overhead view',
     icon: 'BRD',
-    thumbnail: '/thumbnails/angle-birds-eye-view.png',
+    thumbnail: '/thumbnails/angle-birds-eye-view.webp',
   },
   {
     id: 'worms-eye',
@@ -213,7 +213,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '웜즈 아이',
     description: 'From ground looking straight up',
     icon: 'WRM',
-    thumbnail: '/thumbnails/angle-worms-eye-view.png',
+    thumbnail: '/thumbnails/angle-worms-eye-view.webp',
   },
   {
     id: 'pov',
@@ -221,7 +221,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: 'POV',
     description: 'First person perspective',
     icon: 'POV',
-    thumbnail: '/thumbnails/angle-point-of-view.png',
+    thumbnail: '/thumbnails/angle-point-of-view.webp',
   },
   {
     id: 'over-shoulder',
@@ -229,7 +229,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
     labelKo: '오버 더 숄더',
     description: 'From behind one subject toward another',
     icon: 'OTS',
-    thumbnail: '/thumbnails/angle-over-the-shoulder.png',
+    thumbnail: '/thumbnails/angle-over-the-shoulder.webp',
   },
 ];
 
@@ -240,7 +240,7 @@ export const LIGHTING_STYLES: LightingStyle[] = [
     labelKo: '낮',
     description: 'Clear daytime natural light',
     icon: 'DAY',
-    thumbnail: '/thumbnails/time-day.png',
+    thumbnail: '/thumbnails/time-day.webp',
   },
   {
     id: 'dusk',
@@ -248,7 +248,7 @@ export const LIGHTING_STYLES: LightingStyle[] = [
     labelKo: '노을',
     description: 'Warm sunset and evening sky',
     icon: 'DSK',
-    thumbnail: '/thumbnails/time-dusk.png',
+    thumbnail: '/thumbnails/time-dusk.webp',
   },
   {
     id: 'night',
@@ -256,7 +256,7 @@ export const LIGHTING_STYLES: LightingStyle[] = [
     labelKo: '밤',
     description: 'City lights and deep night sky',
     icon: 'NGT',
-    thumbnail: '/thumbnails/time-night.png',
+    thumbnail: '/thumbnails/time-night.webp',
   },
   {
     id: 'dawn',
@@ -264,7 +264,7 @@ export const LIGHTING_STYLES: LightingStyle[] = [
     labelKo: '새벽',
     description: 'Cool early-morning light before sunrise',
     icon: 'DWN',
-    thumbnail: '/thumbnails/time-dawn.png',
+    thumbnail: '/thumbnails/time-dawn.webp',
   },
 ];
 
@@ -275,7 +275,7 @@ export const WEATHER_STYLES: WeatherStyle[] = [
     labelKo: '맑음',
     description: 'Bright, clear weather with blue skies',
     icon: 'CLR',
-    thumbnail: '/thumbnails/weather-clear.png',
+    thumbnail: '/thumbnails/weather-clear.webp',
   },
   {
     id: 'rain',
@@ -283,7 +283,7 @@ export const WEATHER_STYLES: WeatherStyle[] = [
     labelKo: '비',
     description: 'Rainy atmosphere with wet streets',
     icon: 'RAN',
-    thumbnail: '/thumbnails/weather-rain.png',
+    thumbnail: '/thumbnails/weather-rain.webp',
   },
   {
     id: 'snow',
@@ -291,7 +291,7 @@ export const WEATHER_STYLES: WeatherStyle[] = [
     labelKo: '눈',
     description: 'Snowy scenery with white roads and roofs',
     icon: 'SNW',
-    thumbnail: '/thumbnails/weather-snow.png',
+    thumbnail: '/thumbnails/weather-snow.webp',
   },
 ];
 
@@ -302,7 +302,7 @@ export const GENRES: Genre[] = [
     labelKo: '드라마',
     description: 'Emotional, character-driven',
     icon: 'DRA',
-    thumbnail: '/thumbnails/genre-drama.png',
+    thumbnail: '/thumbnails/genre-drama.webp',
   },
   {
     id: 'action',
@@ -310,7 +310,7 @@ export const GENRES: Genre[] = [
     labelKo: '액션',
     description: 'Dynamic, high energy',
     icon: 'ACT',
-    thumbnail: '/thumbnails/genre-action.png',
+    thumbnail: '/thumbnails/genre-action.webp',
   },
   {
     id: 'thriller',
@@ -318,7 +318,7 @@ export const GENRES: Genre[] = [
     labelKo: '스릴러',
     description: 'Suspenseful, tense atmosphere',
     icon: 'THR',
-    thumbnail: '/thumbnails/genre-thriller.png',
+    thumbnail: '/thumbnails/genre-thriller.webp',
   },
   {
     id: 'animation',
@@ -326,7 +326,7 @@ export const GENRES: Genre[] = [
     labelKo: '애니메이션',
     description: 'Animated style visuals',
     icon: 'ANI',
-    thumbnail: '/thumbnails/genre-animation.png',
+    thumbnail: '/thumbnails/genre-animation.webp',
   },
   {
     id: 'documentary',
@@ -334,7 +334,7 @@ export const GENRES: Genre[] = [
     labelKo: '다큐멘터리',
     description: 'Realistic, observational',
     icon: 'DOC',
-    thumbnail: '/thumbnails/genre-documentary.png',
+    thumbnail: '/thumbnails/genre-documentary.webp',
   },
   {
     id: 'romance',
@@ -342,7 +342,7 @@ export const GENRES: Genre[] = [
     labelKo: '로맨스',
     description: 'Soft, warm, intimate',
     icon: 'ROM',
-    thumbnail: '/thumbnails/genre-romance.png',
+    thumbnail: '/thumbnails/genre-romance.webp',
   },
   {
     id: 'product',
@@ -350,7 +350,7 @@ export const GENRES: Genre[] = [
     labelKo: '광고',
     description: 'Clean, focused product visuals',
     icon: 'ADV',
-    thumbnail: '/thumbnails/genre-product.png',
+    thumbnail: '/thumbnails/genre-product.webp',
   },
   {
     id: 'music-video',
@@ -358,7 +358,7 @@ export const GENRES: Genre[] = [
     labelKo: '뮤직비디오',
     description: 'Stylized, rhythmic visuals synced to music',
     icon: 'MV',
-    thumbnail: '/thumbnails/genre-music-video.png',
+    thumbnail: '/thumbnails/genre-music-video.webp',
   },
 ];
 
@@ -428,7 +428,7 @@ export const FIELD_OF_VIEW = [
     labelKo: '25mm 광각',
     description: 'Very wide angle lens, expansive view',
     icon: '25',
-    thumbnail: '/thumbnails/lens-25mm.png',
+    thumbnail: '/thumbnails/lens-25mm.webp',
   },
   {
     id: '35mm',
@@ -436,7 +436,7 @@ export const FIELD_OF_VIEW = [
     labelKo: '35mm 광각',
     description: 'Classic wide lens, cinematic street look',
     icon: '35',
-    thumbnail: '/thumbnails/lens-35mm.png',
+    thumbnail: '/thumbnails/lens-35mm.webp',
   },
   {
     id: '50mm',
@@ -444,7 +444,7 @@ export const FIELD_OF_VIEW = [
     labelKo: '50mm 표준',
     description: 'Natural perspective, human-eye feel',
     icon: '50',
-    thumbnail: '/thumbnails/lens-50mm.png',
+    thumbnail: '/thumbnails/lens-50mm.webp',
   },
   {
     id: '85mm',
@@ -452,7 +452,7 @@ export const FIELD_OF_VIEW = [
     labelKo: '85mm 망원',
     description: 'Portrait telephoto, strong background blur',
     icon: '85',
-    thumbnail: '/thumbnails/lens-85mm.png',
+    thumbnail: '/thumbnails/lens-85mm.webp',
   },
   {
     id: '100mm',
@@ -460,7 +460,7 @@ export const FIELD_OF_VIEW = [
     labelKo: '100mm 망원',
     description: 'Tight telephoto, compressed background',
     icon: '100',
-    thumbnail: '/thumbnails/lens-100mm.png',
+    thumbnail: '/thumbnails/lens-100mm.webp',
   },
   {
     id: '300mm',
@@ -468,7 +468,7 @@ export const FIELD_OF_VIEW = [
     labelKo: '300mm 초망원',
     description: 'Super telephoto, extremely compressed background',
     icon: '300',
-    thumbnail: '/thumbnails/lens-300mm.png',
+    thumbnail: '/thumbnails/lens-300mm.webp',
   },
 ];
 

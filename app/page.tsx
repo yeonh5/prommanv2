@@ -357,7 +357,7 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
-        <Image src="/logo.png" alt="Promman" width={280} height={100} className="h-20 w-[280px] object-contain object-left" priority />
+        <Image src="/logo.gif" alt="Promman" width={280} height={100} className="h-20 w-[280px] object-contain object-left" priority />
         <a
           href="https://ko-fi.com/Q5Q51W3GLT"
           target="_blank"
@@ -414,7 +414,7 @@ export default function Home() {
                 <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                   <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
-                      src={selectedFOV?.thumbnail || '/thumbnails/lens-50mm.png'}
+                      src={selectedFOV?.thumbnail || '/thumbnails/lens-50mm.webp'}
                       alt={selectedFOV?.labelKo || 'FOV'}
                       width={16}
                       height={9}
@@ -438,7 +438,7 @@ export default function Home() {
                       className={cn('relative aspect-video overflow-hidden rounded', settings.fieldOfView === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
-                        src={item.thumbnail || '/thumbnails/lens-50mm.png'}
+                      src={item.thumbnail || '/thumbnails/lens-50mm.webp'}
                         alt={item.labelKo}
                         width={16}
                         height={9}
@@ -518,7 +518,7 @@ export default function Home() {
                 <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                   <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
-                      src={selectedShot?.thumbnail || '/thumbnails/shot-wide-shot.png'}
+                      src={selectedShot?.thumbnail || '/thumbnails/shot-wide-shot.webp'}
                       alt={selectedShot?.labelKo || 'Shot'}
                       width={16}
                       height={9}
@@ -542,7 +542,7 @@ export default function Home() {
                       className={cn('relative aspect-video overflow-hidden rounded', settings.shotType === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
-                        src={item.thumbnail || '/thumbnails/shot-wide-shot.png'}
+                      src={item.thumbnail || '/thumbnails/shot-wide-shot.webp'}
                         alt={item.labelKo}
                         width={16}
                         height={9}
@@ -570,7 +570,7 @@ export default function Home() {
                 <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                   <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
-                      src={selectedAngle?.thumbnail || '/thumbnails/angle-low-angle.png'}
+                      src={selectedAngle?.thumbnail || '/thumbnails/angle-low-angle.webp'}
                       alt={selectedAngle?.label || 'Angle'}
                       width={16}
                       height={9}
@@ -594,7 +594,7 @@ export default function Home() {
                       className={cn('relative aspect-video overflow-hidden rounded', settings.cameraAngle === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
-                        src={item.thumbnail || '/thumbnails/angle-low-angle.png'}
+                      src={item.thumbnail || '/thumbnails/angle-low-angle.webp'}
                         alt={item.labelKo}
                         width={16}
                         height={9}
@@ -622,7 +622,7 @@ export default function Home() {
                 <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                   <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
-                      src={selectedLight?.thumbnail || '/thumbnails/time-day.png'}
+                      src={selectedLight?.thumbnail || '/thumbnails/time-day.webp'}
                       alt={selectedLight?.labelKo || '시간대'}
                       width={16}
                       height={9}
@@ -646,7 +646,7 @@ export default function Home() {
                       className={cn('relative aspect-video overflow-hidden rounded', settings.lighting === item.id ? 'border-2 border-primary' : 'border border-border')}
                     >
                       <img
-                        src={item.thumbnail || '/thumbnails/time-day.png'}
+                      src={item.thumbnail || '/thumbnails/time-day.webp'}
                         alt={item.labelKo}
                         width={16}
                         height={9}
@@ -674,7 +674,7 @@ export default function Home() {
                 <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                   <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                     <img
-src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
+src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                         alt={selectedWeather?.labelKo || '날씨'}
                         width={16}
                         height={9}
@@ -701,7 +701,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                       )}
                     >
                       <img
-                        src={item.thumbnail || '/thumbnails/weather-clear.png'}
+                        src={item.thumbnail || '/thumbnails/weather-clear.webp'}
                         alt={item.labelKo}
                         width={16}
                         height={9}
@@ -730,7 +730,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                   <button className="flex min-w-0 flex-col items-center gap-1.5 rounded-lg bg-card p-2 ring-[1px] ring-border hover:ring-primary">
                     <div className="relative w-full aspect-video rounded overflow-hidden bg-muted min-h-[5.5rem]">
                       <img
-                        src={selectedMovement?.thumbnail || '/thumbnails/move-static.png'}
+                        src={selectedMovement?.thumbnail || '/thumbnails/move-static.webp'}
                         alt={selectedMovement?.labelKo || 'Move'}
                         width={16}
                         height={9}
@@ -754,7 +754,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                         className={cn('relative aspect-video overflow-hidden rounded', settings.cameraMovement === item.id ? 'border-2 border-primary' : 'border border-border')}
                       >
                         <img
-                          src={item.thumbnail || '/thumbnails/move-static.png'}
+                          src={item.thumbnail || '/thumbnails/move-static.webp'}
                           alt={item.labelKo}
                           width={16}
                           height={9}
@@ -797,7 +797,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                           className="relative h-14 w-14 overflow-hidden bg-transparent focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
                         >
                           <img
-                            src="/thumbnails/char-plus.png"
+                            src="/thumbnails/char-plus.webp"
                             alt="Add character disabled"
                             width={1}
                             height={1}
@@ -818,7 +818,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                                 className="relative h-14 w-14 overflow-hidden bg-transparent"
                               >
                                 <img
-                                  src={`/thumbnails/char-${slot}.png`}
+                                  src={`/thumbnails/char-${slot}.webp`}
                                   alt={char.name}
                                   width={1}
                                   height={1}
@@ -837,7 +837,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                               onClick={() => removeCharacter(char.id)}
                             >
                               <img
-                                src={`/thumbnails/char-${slot}.png`}
+                                src={`/thumbnails/char-${slot}.webp`}
                                 alt={char.name}
                                 width={1}
                                 height={1}
@@ -856,7 +856,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.png'}
                             className="relative h-14 w-14 overflow-hidden bg-transparent focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
                           >
                             <img
-                              src="/thumbnails/char-plus.png"
+                              src="/thumbnails/char-plus.webp"
                               alt="Add character"
                               width={1}
                               height={1}
