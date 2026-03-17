@@ -394,7 +394,7 @@ export default function Home() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="w-96 overflow-y-auto border-r border-border p-4">
+        <div className="w-96 overflow-y-auto border-r border-border p-4 bg-black">
           {/* Mode Toggle */}
           <div className="mb-4 flex rounded-full border border-border bg-card p-1">
             <button
@@ -873,7 +873,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
             {/* Left: Characters + Input */}
             <div className="flex flex-col overflow-hidden">
               {/* Characters */}
-              <div className="mb-3 rounded-lg border border-border bg-card p-3 shrink-0">
+              <div className="mb-3 rounded-lg border border-border bg-black p-3 shrink-0">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold tracking-wider text-foreground">Characters</span>
                 </div>
@@ -1105,7 +1105,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
             {/* Right: Output + History */}
             <div className="relative flex flex-col overflow-hidden min-h-full">
               {/* Output 영역 - 프롬프트 결과 영역 높이 (스크린샷 빨간 선 기준) */}
-              <div className="flex flex-col h-[317px] overflow-hidden rounded-md border border-border bg-card">
+              <div className="flex flex-col h-[317px] overflow-hidden rounded-md border border-border bg-black">
                 <div className="flex-1 overflow-auto p-3 min-h-0 prompt-output">
                   {outputText ? (
                     <pre className="font-mono text-sm whitespace-pre-wrap">
@@ -1280,7 +1280,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                 </section>
                 <section>
                   <h3 className="font-semibold text-foreground">7. 개인정보 보호책임자 및 문의처</h3>
-                  <p className="mt-1">개인정보 보호책임자: yeonho ju · juuuje1@gmail.com</p>
+                  <p className="mt-1">개인정보 보호책임자: yeonho ju · juuuuje1@gmail.com</p>
                 </section>
                 <section>
                   <h3 className="font-semibold text-foreground">8. 개인정보처리방침의 변경</h3>
