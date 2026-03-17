@@ -353,19 +353,17 @@ function buildPromptFromSpec(spec: ShotSpec, mode: Mode): string {
   const negativeBlock = spec.negatives.join(', ');
 
   return [
-    shotBlock,
-    cameraBlock,
-    subjectBlock,
-    actionBlock,
-    environmentBlock,
-    moodBlock,
-    styleBlock,
-    negativeBlock,
+    `--- SHOT & FRAMING --- ${shotBlock}`,
+    `--- CAMERA & LENS --- ${cameraBlock}`,
+    `--- SUBJECT --- ${subjectBlock}`,
+    actionBlock ? `--- SCENE / ACTION --- ${actionBlock}` : '',
+    environmentBlock ? `--- ENVIRONMENT --- ${environmentBlock}` : '',
+    moodBlock ? `--- MOOD & LIGHTING --- ${moodBlock}` : '',
+    `--- STYLE --- ${styleBlock}`,
+    negativeBlock ? `--- NEGATIVE CONSTRAINTS --- ${negativeBlock}` : '',
   ]
     .filter(Boolean)
-    .join(', ')
-    .replace(/\s+,/g, ',')
-    .replace(/,+/g, ',')
+    .join(' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
 }
