@@ -363,7 +363,7 @@ function buildPromptFromSpec(spec: ShotSpec, mode: Mode): string {
     negativeBlock ? `--- NEGATIVE CONSTRAINTS --- ${negativeBlock}` : '',
   ]
     .filter(Boolean)
-    .join(' ')
+    .join('\n')
     .replace(/\s{2,}/g, ' ')
     .trim();
 }
