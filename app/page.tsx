@@ -379,7 +379,7 @@ export default function Home() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
-      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
+      <header className="flex items-center justify-between border-b border-border bg-[#020202] px-6 py-4">
         <Image src="/logo.gif" alt="Promman" width={280} height={100} className="h-20 w-[280px] object-contain object-left" priority />
         <a
           href="https://ko-fi.com/Q5Q51W3GLT"
@@ -394,7 +394,7 @@ export default function Home() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="w-96 overflow-y-auto border-r border-border p-4 bg-black">
+        <div className="w-96 overflow-y-auto border-r border-border p-4">
           {/* Mode Toggle */}
           <div className="mb-4 flex rounded-full border border-border bg-card p-1">
             <button
@@ -873,7 +873,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
             {/* Left: Characters + Input */}
             <div className="flex flex-col overflow-hidden">
               {/* Characters */}
-              <div className="mb-3 rounded-lg border border-border bg-black p-3 shrink-0">
+              <div className="mb-3 rounded-lg border border-border bg-card p-3 shrink-0">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-semibold tracking-wider text-foreground">Characters</span>
                 </div>
@@ -1105,7 +1105,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
             {/* Right: Output + History */}
             <div className="relative flex flex-col overflow-hidden min-h-full">
               {/* Output 영역 - 프롬프트 결과 영역 높이 (스크린샷 빨간 선 기준) */}
-              <div className="flex flex-col h-[317px] overflow-hidden rounded-md border border-border bg-black">
+              <div className="flex flex-col h-[317px] overflow-hidden rounded-md border border-border bg-card">
                 <div className="flex-1 overflow-auto p-3 min-h-0 prompt-output">
                   {outputText ? (
                     <pre className="font-mono text-sm whitespace-pre-wrap">
@@ -1287,11 +1287,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                   <p className="mt-1">법령·정책 변경 시 수정될 수 있으며, 중요한 변경 시 서비스 내 공지로 안내합니다. 최신 버전은 본 페이지에서 확인할 수 있습니다.</p>
                 </section>
               </div>
-              <div className="p-3 border-t border-border shrink-0 flex justify-end">
-                <a href="https://www.promman.com/privacy.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-xs inline-flex items-center gap-1">
-                  전문 보기 <ExternalLink className="h-3 w-3" />
-                </a>
-              </div>
+              <div className="p-3 border-t border-border shrink-0 flex justify-end" />
             </PopoverContent>
           </Popover>
           <span>Copyright © 2026 Promman</span>

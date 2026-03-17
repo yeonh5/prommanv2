@@ -203,7 +203,7 @@ export const CAMERA_ANGLES: CameraAngle[] = [
   {
     id: 'birds-eye',
     label: "Bird's Eye",
-    labelKo: '버즈 아이',
+    labelKo: '버드 아이',
     description: 'Directly overhead view',
     icon: 'BRD',
     thumbnail: '/thumbnails/angle-birds-eye-view.webp',
