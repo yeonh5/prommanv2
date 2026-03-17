@@ -22,7 +22,19 @@ export function saveToHistory(item: PromptHistoryItem) {
   if (typeof window === 'undefined') return;
   const current = getHistory();
   const next = [item, ...current];
-  window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+
+  // 최대 30개까지 보관.
+  // 즐겨찾기(isFavorite=true)는 30개를 넘어가더라도 우선적으로 보존하고,
+  // 즐겨찾기가 아닌 오래된 항목부터 잘라낸다.
+  const favorites = next.filter(entry => entry.isFavorite);
+  const nonFavorites = next.filter(entry => !entry.isFavorite);
+
+  const remainSlotsForNonFavorites = Math.max(0, 30 - favorites.length);
+  const limitedNonFavorites = nonFavorites.slice(0, remainSlotsForNonFavorites);
+
+  const pruned = [...favorites, ...limitedNonFavorites];
+
+  window.localStorage.setItem(HISTORY_KEY, JSON.stringify(pruned));
 }
 
 export function toggleFavorite(id: string): PromptHistoryItem[] {

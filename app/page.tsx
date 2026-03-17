@@ -15,13 +15,15 @@ import { getHistory, saveToHistory, toggleFavorite, deleteHistoryItem } from '@/
 const TIPS = [
   '캐릭터 이름을 프롬프트에서 직접 사용하세요.',
   'bolder studio에서 만들고 서비스합니다.',
-  '조명 설정은 분위기를 크게 좌우합니다.',
-  '카메라 앵글 변경만으로도 완전히 다른 느낌의 장면을 만들 수 있어요',
-  'AI의 특성상 버드샷의 구현이 약합니다. 생성을 여러번 시도하세요.',
+  '시간대 설정은 분위기를 크게 좌우합니다.',
+  '카메라 앵글 변경만으로도 완전히 다른 느낌의 장면을 만들 수 있어요.',
+  '장소 탭을 추가했습니다. 실내로 탭을 설정하고 방, 공터 등의 디테일한 장소를 설정하면 더 정확한 결과물이 나옵니다.',
   '화낸다. 보다는 차가운 분위기라는 무드 표현이 더 시네마틱한 결과물을 얻을 수 있습니다.',
   '실시간으로 개선 중입니다. 마음에 들지않는 결과가 나오더라도 넓은 마음으로 다시 시도해주세요.',
   '프롬프트 생성기이다보니 이미지 생성 기능을 직접 제공하지는 않습니다.',
-  '볼더 모카 베타 팔로미노 엔에이유 렛츠고',
+  '캐릭터를 우선 설정하고 구글 플로우나 힉스필드의 엘리먼트로 대체하면 정확한 결과물을 얻을 수 있습니다.',
+  '장르 탭의 광고와 장소 탭의 실내 스튜디오는 프로토 타입에 가깝습니다.',
+  '볼더 모카 베타 팔로미노 엔에이유 렛츠고~!',
 ];
 
 const defaultSettings: DirectorSettings = {
@@ -224,7 +226,6 @@ export default function Home() {
   const [outputText, setOutputText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [characters, setCharacters] = useState<(Character | null)[]>([null, null, null, null]);
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
@@ -249,6 +250,8 @@ export default function Home() {
   const selectedMovement = CAMERA_MOVEMENTS.find(m => m.id === settings.cameraMovement);
 
   const [pillState, setPillState] = useState<'image' | 'video' | 'stretch'>('image');
+  const [openHistoryIds, setOpenHistoryIds] = useState<string[]>([]);
+  const [historyCopiedId, setHistoryCopiedId] = useState<string | null>(null);
 
   const closeAllDirectorPopovers = () => {
     setFovOpen(false);
@@ -385,7 +388,7 @@ export default function Home() {
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
         >
           <Heart className="h-4 w-4" />
-          Ko-fi로 후원하기
+          후원하기
         </a>
       </header>
 
@@ -416,7 +419,7 @@ export default function Home() {
             </button>
           </div>
 
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Director Controls</h3>
+          <h3 className="mb-4 text-sm font-semibold tracking-wider text-foreground">Director Controls</h3>
 
           {/* Director Controls - 2 columns, 3 rows (2x3) */}
           <div className="grid grid-cols-2 gap-2">
@@ -872,7 +875,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
               {/* Characters */}
               <div className="mb-3 rounded-lg border border-border bg-card p-3 shrink-0">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase text-muted-foreground">Characters</span>
+                  <span className="text-sm font-semibold tracking-wider text-foreground">Characters</span>
                 </div>
 
                 {/* Character thumbnails row */}
@@ -1099,10 +1102,11 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
               </div>
             </div>
 
-            {/* Right: Output - align top with Characters */}
+            {/* Right: Output + History */}
             <div className="relative flex flex-col overflow-hidden min-h-full">
-              <div className="flex-1 flex flex-col min-h-[480px] overflow-hidden rounded-md border border-border bg-card">
-                <div className="flex-1 overflow-auto p-3 min-h-0">
+              {/* Output 영역 - 프롬프트 결과 영역 높이 (스크린샷 빨간 선 기준) */}
+              <div className="flex flex-col h-[317px] overflow-hidden rounded-md border border-border bg-card">
+                <div className="flex-1 overflow-auto p-3 min-h-0 prompt-output">
                   {outputText ? (
                     <pre className="font-mono text-sm whitespace-pre-wrap">
                       {outputText}
@@ -1118,91 +1122,117 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                     {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                     {copied ? 'Copied' : 'Copy'}
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)} className="h-6 gap-1 px-2 text-xs">
-                    <History className="h-3 w-3" />{history.length}
-                  </Button>
                 </div>
               </div>
 
-              {/* History Overlay */}
-              {showHistory && (
-                <div
-                  className="absolute inset-0 z-10 flex items-stretch justify-stretch bg-black/20"
-                  onClick={() => setShowHistory(false)}
-                >
-                  <div
-                    className="flex flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl animate-in slide-in-from-right duration-300"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <div className="flex items-center justify-between border-b border-border px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold">History</span>
-                        {history.some(h => h.isFavorite) && (
-                          <Star className="h-4 w-4 text-primary fill-current" />
-                        )}
-                      </div>
-                      <button onClick={() => setShowHistory(false)} className="rounded-md p-1 hover:bg-secondary">
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto">
-                      {history.length === 0 ? (
-                        <div className="flex h-full flex-col items-center justify-center">
-                          <History className="h-10 w-10 text-muted-foreground/30" />
-                          <p className="mt-3 text-sm text-muted-foreground">No history yet</p>
-                        </div>
-                      ) : (
-                        <div className="divide-y divide-border">
-                          {history.map(item => (
-                            <div
-                              key={item.id}
-                              className="group cursor-pointer p-4 hover:bg-secondary/30"
-                              onClick={() => {
-                                setOutputText(item.outputEnglish);
-                                setShowHistory(false);
-                              }}
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <p className="line-clamp-1 text-xs text-muted-foreground flex-1">
-                                  {item.inputKorean}
-                                </p>
-                                {item.isFavorite && (
-                                  <Star className="h-3 w-3 text-primary fill-current shrink-0" />
-                                )}
-                              </div>
-                              <p className="mt-1 line-clamp-2 font-mono text-sm">{item.outputEnglish}</p>
-                              <div className="mt-2 flex gap-2 opacity-0 group-hover:opacity-100">
-                                <button
-                                  className={cn('p-1 rounded', item.isFavorite && 'text-primary')}
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    const updated = toggleFavorite(item.id).sort(
-                                      (a, b) => Number(b.isFavorite) - Number(a.isFavorite)
-                                    );
-                                    setHistory(updated);
-                                  }}
-                                >
-                                  <Star className={cn('h-4 w-4', item.isFavorite && 'fill-current')} />
-                                </button>
-                                <button
-                                  className="p-1 rounded text-muted-foreground hover:text-destructive"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    const updated = deleteHistoryItem(item.id);
-                                    setHistory(updated);
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+              {/* History 패널 (항상 우측 컬럼 하단에 노출) */}
+              <div className="mt-3 flex flex-col h-[520px] rounded-md border border-border bg-card overflow-hidden">
+                <div className="flex items-center border-b border-border px-3 py-2 shrink-0">
+                  <span className="text-sm font-semibold tracking-wider text-foreground">History</span>
+                  <span className="ml-3 text-[13px] text-muted-foreground font-normal">
+                    히스토리는 30개까지 저장되고, 즐겨찾기(⭐)한 프롬프트는 보존됩니다.
+                  </span>
                 </div>
-              )}
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                  {history.length === 0 ? (
+                    <div className="flex h-full flex-col items-center justify-center">
+                      <History className="h-10 w-10 text-muted-foreground/30" />
+                      <p className="mt-3 text-sm text-muted-foreground">No history yet</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-border">
+                      {history.map(item => {
+                        const isOpen = openHistoryIds.includes(item.id);
+                        return (
+                          <div
+                            key={item.id}
+                            className="group p-3 hover:bg-secondary/30"
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <button
+                                className={cn(
+                                  'p-1 rounded text-muted-foreground hover:text-primary',
+                                  item.isFavorite && 'text-primary',
+                                )}
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  const updated = toggleFavorite(item.id).sort(
+                                    (a, b) => Number(b.isFavorite) - Number(a.isFavorite),
+                                  );
+                                  setHistory(updated);
+                                }}
+                              >
+                                <Star
+                                  className={cn(
+                                    'h-4 w-4',
+                                    item.isFavorite && 'fill-current',
+                                  )}
+                                />
+                              </button>
+                              <button
+                                type="button"
+                                className="flex-1 text-left"
+                                onClick={() => {
+                                  setOpenHistoryIds(prev =>
+                                    prev.includes(item.id)
+                                      ? prev.filter(id => id !== item.id)
+                                      : [...prev, item.id],
+                                  );
+                                }}
+                              >
+                                <div className="flex items-center gap-1.5">
+                                  <p className="line-clamp-1 text-[13px] text-foreground">
+                                    {item.inputKorean}
+                                  </p>
+                                  <ChevronDown
+                                    className={cn(
+                                      'h-3 w-3 text-muted-foreground transition-transform',
+                                      isOpen ? 'rotate-180' : '',
+                                    )}
+                                  />
+                                </div>
+                              </button>
+                              <button
+                                className="p-1 rounded text-muted-foreground hover:text-destructive"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  const updated = deleteHistoryItem(item.id);
+                                  setHistory(updated);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                            {isOpen && (
+                              <>
+                                <p className="mt-1 font-mono text-[13px] whitespace-pre-wrap">
+                                  {item.outputEnglish}
+                                </p>
+                                <div className="mt-2 flex items-center justify-between gap-2">
+                                  <button
+                                    className="inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-primary"
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      if (navigator?.clipboard?.writeText) {
+                                        navigator.clipboard.writeText(item.outputEnglish || '');
+                                      }
+                                      setHistoryCopiedId(item.id);
+                                      setTimeout(() => setHistoryCopiedId(prev => (prev === item.id ? null : prev)), 2000);
+                                    }}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                    <span>{historyCopiedId === item.id ? 'Copied' : 'Copy'}</span>
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1217,7 +1247,7 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
                 개인정보처리방침
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-[90vw] max-w-xl max-h-[80vh] overflow-hidden flex flex-col p-0" side="bottom">
+            <PopoverContent className="w-[90vw] max-w-xl max-h-[80vh] overflow-hidden flex flex-col p-0" side="top">
               <div className="p-4 border-b border-border shrink-0">
                 <h2 className="text-sm font-semibold">개인정보처리방침</h2>
                 <p className="text-[11px] text-muted-foreground mt-0.5">최종 업데이트: 2026-03-16</p>

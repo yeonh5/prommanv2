@@ -150,4 +150,34 @@
     font-family: var(--font-en);
     letter-spacing: 0;
   }
+
+  /* 기본적으로 캐럿/드래그 비활성화 */
+  body,
+  body * {
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    caret-color: transparent;
+  }
+
+  /* 텍스트 입력/편집 가능한 요소에서는 다시 활성화 */
+  input,
+  textarea,
+  [contenteditable='true'],
+  .prompt-output,
+  .prompt-output * {
+    user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    caret-color: inherit;
+  }
+}
+
+/* 스크롤 가능하지만 스크롤바만 숨기는 유틸리티 */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
