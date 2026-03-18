@@ -7,12 +7,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { Copy, Check, Sparkles, Image as ImageIcon, Video, Plus, ChevronDown, History, Trash2, X, Heart, ExternalLink, Star, Pencil } from 'lucide-react';
+import { Copy, Check, Sparkles, Image as ImageIcon, Video, Plus, ChevronDown, History, Trash2, X, Heart, ExternalLink, Star, Pencil, FileText, Upload } from 'lucide-react';
 import { GENRES, SHOT_TYPES, CAMERA_ANGLES, LIGHTING_STYLES, WEATHER_STYLES, CAMERA_MOVEMENTS, FIELD_OF_VIEW, LOCATION_STYLES } from '@/lib/types';
 import type { Character, DirectorSettings, PrommanOutputMode } from '@/lib/types';
 import { getHistory, saveToHistory, toggleFavorite, deleteHistoryItem } from '@/lib/storage';
 
-const TIPS = [
+const TIPS_TEXT = [
   '캐릭터 이름을 프롬프트에서 직접 사용하세요.',
   'bolder studio에서 만들고 서비스합니다.',
   '시간대 설정은 분위기를 크게 좌우합니다.',
@@ -24,6 +24,16 @@ const TIPS = [
   '캐릭터를 우선 설정하고 구글 플로우나 힉스필드의 엘리먼트로 대체하면 정확한 결과물을 얻을 수 있습니다.',
   '장르 탭의 광고와 장소 탭의 실내 스튜디오는 프로토 타입에 가깝습니다.',
   '볼더 모카 베타 팔로미노 엔에이유 렛츠고~!',
+];
+
+const TIPS_IMAGE = [
+  '베타 버전으로 성공율이 50% 미만입니다. 이미지 생성 서비스 이용시 유의 하시길 바랍니다.',
+  '이미지의 화질과 구도에 따라 AI의 이미지 해석이 실제와 상이할 수 있습니다.',
+  'AI의 정책상 국적을 해석해주지 않습니다. 국적은 수동으로 작성해야 합니다.',
+  '한글 프롬프트와 영문 프롬프트의 원본 사진 재현율이 매번 다릅니다.',
+  'LLM 데이터가 아닌 학습에 의한 해석이기 때문에 앞으로 업데이트가 얼마나 될 지는 개발자의 컨디션에 달려있습니다.',
+  'grok의 imagine의 수율이 가장 안 좋습니다. 다만 압도적인 물량을 원하신다면 추천합니다.',
+  '와이프의 건강을 위해 열심히 돈 벌어야 합니다. 후원하기 한번씩 부탁드립니다.',
 ];
 
 const defaultSettings: DirectorSettings = {
@@ -220,12 +230,15 @@ const MOVEMENT_EXPLANATIONS: Record<string, { title: string; body: string }> = {
 };
 
 export default function Home() {
+  const [topMode, setTopMode] = useState<'text-to-image' | 'image-to-text'>('text-to-image');
   const [mode, setMode] = useState<PrommanOutputMode>('image');
   const [inputText, setInputText] = useState('');
   const [videoDetailText, setVideoDetailText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [imageKoCopied, setImageKoCopied] = useState(false);
+  const [imageTextCopied, setImageTextCopied] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [characters, setCharacters] = useState<(Character | null)[]>([null, null, null, null]);
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
@@ -252,6 +265,12 @@ export default function Home() {
   const [pillState, setPillState] = useState<'image' | 'video' | 'stretch'>('image');
   const [openHistoryIds, setOpenHistoryIds] = useState<string[]>([]);
   const [historyCopiedId, setHistoryCopiedId] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [describeLoading, setDescribeLoading] = useState(false);
+  const [describeError, setDescribeError] = useState<string | null>(null);
+  const [describedKo, setDescribedKo] = useState('');
+  const [describedEn, setDescribedEn] = useState('');
 
   const closeAllDirectorPopovers = () => {
     setFovOpen(false);
@@ -264,9 +283,62 @@ export default function Home() {
     setMoveOpen(false);
   };
 
+  const IMAGE_MAX_BYTES = 3 * 1024 * 1024; // 3MB
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith('image/')) {
+      setDescribeError('이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+    if (f.size > IMAGE_MAX_BYTES) {
+      setDescribeError('3MB 이하의 이미지만 업로드할 수 있습니다.');
+      e.target.value = '';
+      return;
+    }
+    if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+    setImagePreviewUrl(URL.createObjectURL(f));
+    setImageFile(f);
+    setDescribeError(null);
+    e.target.value = '';
+  };
+
+  const handleDescribeImage = async () => {
+    if (!imageFile) return;
+    setDescribeLoading(true);
+    setDescribeError(null);
+    try {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      const res = await fetch('/api/describe-image', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({} as any));
+      if (!res.ok) {
+        setDescribeError(data.error || res.statusText || '해석 실패');
+        return;
+      }
+      const ko: string = (data.korean ?? '').trim();
+      const en: string = (data.english ?? '').trim();
+      if (!ko && !en) {
+        setDescribeError('해석 결과를 가져오지 못했습니다.');
+        return;
+      }
+      setDescribedKo(ko);
+      setDescribedEn(en);
+    } catch (e) {
+      setDescribeError(e instanceof Error ? e.message : '해석 중 오류');
+    } finally {
+      setDescribeLoading(false);
+    }
+  };
+
   useEffect(() => {
     setHistory(getHistory());
-    const interval = setInterval(() => setTipIndex(p => (p + 1) % TIPS.length), 10000);
+    const maxLen = Math.max(TIPS_TEXT.length, TIPS_IMAGE.length);
+    const interval = setInterval(() => setTipIndex(p => (p + 1) % maxLen), 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -380,7 +452,35 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
       <header className="flex items-center justify-between border-b border-border bg-[#020202] px-6 py-4">
-        <Image src="/logo.gif" alt="Promman" width={280} height={100} className="h-20 w-[280px] object-contain object-left" priority />
+        <div className="flex items-center gap-2">
+          <Image src="/logo.gif" alt="Promman" width={280} height={100} className="h-20 w-[200px] object-contain object-left" priority />
+          {/* Top navigation: Text to Image / Image to Text */}
+          <div className="flex items-center gap-10 text-lg mt-0">
+            <button
+              type="button"
+              onClick={() => setTopMode('text-to-image')}
+              className={cn(
+                'inline-flex items-center gap-1.5 font-medium transition-colors',
+                topMode === 'text-to-image' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <FileText className="h-5 w-5" />
+              Text to Image
+            </button>
+            <button
+              type="button"
+              onClick={() => setTopMode('image-to-text')}
+              className={cn(
+                'inline-flex items-center gap-1.5 font-medium transition-colors',
+                topMode === 'image-to-text' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              <ImageIcon className="h-5 w-5" />
+              Image to Text
+              <span className="ml-0 text-sm text-muted-foreground">Beta</span>
+            </button>
+          </div>
+        </div>
         <a
           href="https://ko-fi.com/Q5Q51W3GLT"
           target="_blank"
@@ -393,6 +493,9 @@ export default function Home() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar & 메인 - Text to Image */}
+        {topMode === 'text-to-image' ? (
+        <>
         {/* Sidebar */}
         <div className="w-96 overflow-y-auto border-r border-border p-4">
           {/* Mode Toggle */}
@@ -866,7 +969,9 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
         {/* Main Content */}
         <div className="relative flex flex-1 flex-col p-4">
           <div className="mb-3 rounded-md border border-primary/20 bg-primary/5 px-3 py-2">
-            <p className="text-xs text-primary">{'💡'} {TIPS[tipIndex]}</p>
+            <p className="text-xs text-primary">
+              {'💡'} {TIPS_TEXT[tipIndex % TIPS_TEXT.length]}
+            </p>
           </div>
 
           <div className="grid flex-1 grid-cols-2 gap-4 overflow-hidden items-start">
@@ -1236,6 +1341,145 @@ src={selectedWeather?.thumbnail || '/thumbnails/weather-clear.webp'}
             </div>
           </div>
         </div>
+        </>
+        ) : (
+          /* Image to Text: 좌측(업로드 + 이미지), 우측(프롬프트 결과 + Copy) */
+          <div className="flex flex-1 flex-col overflow-hidden p-4">
+            {/* 상단 팁 영역 */}
+            <div className="mb-3 rounded-md border border-primary/20 bg-primary/5 px-3 py-2">
+              <p className="text-xs text-primary">
+                {'💡'} {TIPS_IMAGE[tipIndex % TIPS_IMAGE.length]}
+              </p>
+            </div>
+            {/* 메인 2컬럼 영역 */}
+            <div className="flex flex-1 gap-4 overflow-hidden items-start">
+              {/* Left: 업로드 + 이미지 미리보기 (적당한 고정 폭) */}
+              <div className="w-[360px] shrink-0 flex flex-col gap-3">
+                <div className="rounded-lg border border-border bg-card p-3">
+                  <div className="mb-2 flex items-center">
+                    <span className="text-sm font-semibold tracking-wider text-foreground">Image to Text</span>
+                    <span className="ml-3 text-[13px] text-muted-foreground font-normal">
+                      3MB 이하 이미지만 업로드 가능
+                    </span>
+                  </div>
+                  <label className="block cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleImageSelect}
+                      disabled={describeLoading}
+                    />
+                    <div className="flex flex-col items-center gap-1.5 rounded-lg border-2 border-dashed border-border bg-card/50 px-4 py-8 transition-colors hover:border-primary/50 hover:bg-card">
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                      <span className="text-xs font-medium text-foreground">
+                        Image Upload · 이미지 업로드
+                      </span>
+                    </div>
+                  </label>
+                  {describeError && (
+                    <p className="mt-2 text-xs text-destructive">{describeError}</p>
+                  )}
+                </div>
+
+                <div className="min-h-[200px] rounded-md border border-border bg-card overflow-hidden flex flex-col">
+                  {imagePreviewUrl ? (
+                    <>
+                      <div className="overflow-hidden flex items-center justify-center">
+                        <img
+                          src={imagePreviewUrl}
+                          alt="미리보기"
+                          className="w-full h-auto object-contain"
+                        />
+                      </div>
+                      <div className="border-t border-border px-3 py-2 flex justify-start">
+                        <Button
+                          onClick={handleDescribeImage}
+                          disabled={describeLoading}
+                          className="gap-2 tracking-[0.02em]"
+                        >
+                          <Sparkles className="h-4 w-4" />
+                          {describeLoading ? 'Generating...' : 'Generate'}
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex-1 w-full flex items-center justify-center text-sm text-muted-foreground">
+                      이미지를 선택하면 여기에 표시됩니다
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right: 프롬프트 결과창 - 위: 한글, 아래: 영어 + Copy */}
+              <div className="relative flex flex-1 flex-col overflow-hidden min-h-full gap-3">
+                {/* Korean summary box */}
+                <div className="h-[280px] shrink-0 flex flex-col rounded-md border border-border bg-card overflow-hidden">
+                  <div className="flex-1 overflow-auto p-3 min-h-0">
+                    {describedKo ? (
+                      <p className="text-sm text-foreground whitespace-pre-wrap">
+                        {describedKo}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        이미지를 업로드하고 해석하기를 누르면 한국어 요약이 여기에 표시됩니다.
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-end gap-1 shrink-0 p-2 border-t border-border">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (!describedKo) return;
+                        navigator.clipboard.writeText(describedKo);
+                        setImageKoCopied(true);
+                        setTimeout(() => setImageKoCopied(false), 2000);
+                      }}
+                      disabled={!describedKo}
+                      className="h-6 gap-1 px-2 text-xs"
+                    >
+                      {imageKoCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      {imageKoCopied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* English prompt box */}
+                <div className="flex-1 flex flex-col min-h-[300px] overflow-hidden rounded-md border border-border bg-card">
+                  <div className="flex-1 overflow-auto p-3 min-h-0 prompt-output">
+                    {describedEn ? (
+                      <pre className="font-mono text-sm text-foreground whitespace-pre-wrap">
+                        {describedEn}
+                      </pre>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        이미지를 업로드하고 해석하기를 누르면 영어 프롬프트가 여기에 표시됩니다.
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-end gap-1 shrink-0 p-2 border-t border-border">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (!describedEn) return;
+                        navigator.clipboard.writeText(describedEn);
+                        setImageTextCopied(true);
+                        setTimeout(() => setImageTextCopied(false), 2000);
+                      }}
+                      disabled={!describedEn}
+                      className="h-6 gap-1 px-2 text-xs"
+                    >
+                      {imageTextCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      {imageTextCopied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Footer - 통합 하단 */}
